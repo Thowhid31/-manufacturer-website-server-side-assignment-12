@@ -12,16 +12,30 @@ const uri = `mongodb+srv://${process.env.DB_USER}:${process.env.DB_PASS}@cluster
 
 const client = new MongoClient(uri, { useNewUrlParser: true, useUnifiedTopology: true, serverApi: ServerApiVersion.v1 });
 
-async function run(){
-    try{
+async function run() {
+    try {
         await client.connect();
         const productsCollection = client.db('computer_mechanism').collection('products');
+        const purchaseCollection = client.db('computer_mechanism').collection('purchase');
+        const userCollection = client.db('computer_mechanism').collection('users');
 
-        app.get('/product', async(req, res) =>{
+        app.get('/product', async (req, res) => {
             const query = {};
             const cursor = productsCollection.find(query);
             const products = await cursor.toArray();
             res.send(products)
+        })
+
+        app.put('/user/:email', async (req, res) => {
+            const email = req.params.email;
+            const user = req.body;
+            const filter = { email: email };
+            const options = { upsert: true };
+            const updateDoc = {
+                $set: user,
+            };
+            const result = await userCollection.updateOne(filter, updateDoc, options);
+            res.send(result);
         })
 
         app.get('/product/:id', async (req, res) => {
@@ -31,8 +45,9 @@ async function run(){
             const product = await productsCollection.findOne(query);
             res.send(product);
         })
+
     }
-    finally{
+    finally {
 
     }
 }
@@ -40,9 +55,9 @@ async function run(){
 run().catch(console.log('Hello CM'))
 
 app.get('/', (req, res) => {
-  res.send('Hello From Computer Mechanism!')
+    res.send('Hello From Computer Mechanism!')
 })
 
 app.listen(port, () => {
-  console.log(`Computer listening on port ${port}`)
+    console.log(`Computer listening on port ${port}`)
 })
