@@ -37,6 +37,17 @@ async function run() {
         const purchaseCollection = client.db('computer_mechanism').collection('purchase');
         const userCollection = client.db('computer_mechanism').collection('users');
 
+        const verifyAdmin = async (req, res, next) => {
+            const requester = req.decoded.email;
+            const requesterAccount = await userCollection.findOne({ email: requester });
+            if (requesterAccount.role === 'admin') {
+              next()
+            }
+            else {
+              res.status(403).send({ message: 'Forbidden' })
+            }
+          }
+
         app.get('/product', async (req, res) => {
             const query = {};
             const cursor = productsCollection.find(query);
@@ -48,6 +59,15 @@ async function run() {
             const users = await userCollection.find().toArray();
             res.send(users);
         })
+
+        app.delete('/user/:email', verifyJWT, verifyAdmin, async(req, res)=>{
+            const email = req.params.email;
+            const filter = {email: email}
+            const users = await userCollection.deleteOne(filter)
+            res.send(users);
+        })
+
+
 
         app.get('/admin/:email', async(req, res)=>{
             const email = req.params.email;
