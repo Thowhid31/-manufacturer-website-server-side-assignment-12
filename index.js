@@ -36,6 +36,7 @@ async function run() {
         const productsCollection = client.db('computer_mechanism').collection('products');
         const purchaseCollection = client.db('computer_mechanism').collection('purchase');
         const userCollection = client.db('computer_mechanism').collection('users');
+        const orderCollection = client.db('computer_mechanism').collection('orders');
 
         const verifyAdmin = async (req, res, next) => {
             const requester = req.decoded.email;
@@ -93,6 +94,12 @@ async function run() {
                 res.status(403).send({message: 'Forbidden Access'})
             }
             
+        })
+
+        app.post('/orders', async(req, res)=> {
+            const order = req.body;
+            const result = await orderCollection.insertOne(order);
+            res.send(result);
         })
 
         app.put('/user/:email', async (req, res) => {
