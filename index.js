@@ -71,6 +71,14 @@ async function run() {
         });
 
 
+        app.post('/orders', async (req, res) => {
+            const order = req.body;
+            const result = await orderCollection.insertOne(order);
+            res.send(result);
+        }) 
+
+
+
         app.get('/review', async(req, res)=> {
             const query = {};
             const cursor = reviewCollection.find(query);
