@@ -52,7 +52,7 @@ async function run() {
             }
         }
 
-        app.get('/product', async (req, res) => {
+        app.get('/product', verifyJWT, async (req, res) => {
             const query = {};
             const cursor = productsCollection.find(query);
             const products = await cursor.toArray();
@@ -74,9 +74,19 @@ async function run() {
         });
 
 
-        app.post('/orders', async (req, res) => {
+        app.post('/orders', verifyJWT, async (req, res) => {
             const order = req.body;
             const result = await orderCollection.insertOne(order);
+            res.send(result);
+        }) 
+
+
+
+
+        app.delete('/orders/:email', verifyJWT, async (req, res) => {
+            const email = req.params.email;
+            const filter = {email: email}
+            const result = await orderCollection.deleteOne(filter);
             res.send(result);
         }) 
 
