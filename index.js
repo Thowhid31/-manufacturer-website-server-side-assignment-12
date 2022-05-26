@@ -60,7 +60,7 @@ async function run() {
         });
 
 
-        app.delete('/product/:id', verifyJWT, async (req, res) => {
+        app.delete('/product/:id', async (req, res) => {
             const id = req.params.id;
             const filter = {_id: ObjectId(id)};
             const result = await productsCollection.deleteOne(filter);
@@ -99,7 +99,7 @@ async function run() {
         })
 
 
-        app.post('/orders', verifyJWT, async (req, res) => {
+        app.post('/orders', async (req, res) => {
             const order = req.body;
             const result = await orderCollection.insertOne(order);
             res.send(result);
@@ -108,7 +108,7 @@ async function run() {
 
 
 
-        app.delete('/orders/:email', verifyJWT, async (req, res) => {
+        app.delete('/orders/:email', async (req, res) => {
             const email = req.params.email;
             const filter = {email: email}
             const result = await orderCollection.deleteOne(filter);
@@ -116,7 +116,7 @@ async function run() {
         }) 
 
 
-        app.get('/orders/:id', verifyJWT, async(req, res)=> {
+        app.get('/orders/:id', async(req, res)=> {
             const id = req.params.id;
             const query = {_id: ObjectId(id)}
             const order = await orderCollection.findOne(query);
@@ -138,7 +138,7 @@ async function run() {
             res.send(result)
         })
 
-        app.get('/user', verifyJWT, async (req, res) => {
+        app.get('/user', async (req, res) => {
             const users = await userCollection.find().toArray();
             res.send(users);
         })
@@ -227,7 +227,7 @@ async function run() {
             res.send({clientSecret: paymentIntent.client_secret})
         })
 
-        app.patch('/orders/:id', verifyJWT, async(req, res)=>{
+        app.patch('/orders/:id', async(req, res)=>{
             const id = req.params.id;
             const payment = req.body;
             const filter = {_id: ObjectId(id)};
